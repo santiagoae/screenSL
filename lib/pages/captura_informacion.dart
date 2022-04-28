@@ -1,11 +1,6 @@
-import 'package:dropdownfield/dropdownfield.dart';
 import "package:flutter/material.dart";
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:slscreen/db/operaciones.dart';
 import 'package:slscreen/models/empresas.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:toggle_switch/toggle_switch.dart';
 
 class CapturaInfo extends StatefulWidget {
   static const String ROUTE = "/capturaInfo";
@@ -21,15 +16,7 @@ class _CapturaInfoState extends State<CapturaInfo> {
 
   final tipoController = TextEditingController();
 
-  final valorController = TextEditingController();
-
-  final prendaSeleccionada = TextEditingController();
-
-  final videoController = TextEditingController();
-
   final contentController = TextEditingController();
-
-  int? mostrar;
 
   @override
   Widget build(BuildContext context) {
@@ -52,20 +39,12 @@ class _CapturaInfoState extends State<CapturaInfo> {
     tipoController.text = empresa.tipo!;
   }
 
-  String seleccionaPrenda = "Seleciona el tipo de prenda";
-
-  List<String> tiposPrenda = [
-    "Camiseta",
-    "Camisa",
-    "Buso",
-  ];
-
   @override
   Widget _buildForm(Empresas empresa) {
     return Container(
       padding: EdgeInsets.all(15),
       child: Form(
-        autovalidateMode: AutovalidateMode.disabled,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         key: _formKey,
         child: Column(
           children: <Widget>[
@@ -103,60 +82,6 @@ class _CapturaInfoState extends State<CapturaInfo> {
               height: 15,
             ),
             TextFormField(
-              controller: valorController,
-              validator: (value) {
-                if (value != null) {
-                  return null;
-                } else {
-                  return "tiene que colocar data";
-                }
-              },
-              decoration: InputDecoration(
-                  labelText: "Ingresa el valor de este producto",
-                  border: OutlineInputBorder()),
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            DropDownField(
-              controller: prendaSeleccionada,
-              hintText: seleccionaPrenda,
-              enabled: true,
-              itemsVisibleInDropdown: 3,
-              items: tiposPrenda,
-              onValueChanged: (value) {
-                setState(() {
-                  seleccionaPrenda = value;
-                });
-              },
-            ),
-
-            _mostrarWidget(mostrar),
-
-            ToggleSwitch(
-              minWidth: 200,
-              minHeight: 80,
-              cornerRadius: 10,
-              fontSize: 30,
-              iconSize: 25,
-              activeBgColors: [
-                [Colors.green],
-                [Colors.white]
-              ],
-              activeFgColor: Colors.white,
-              inactiveBgColor: Colors.black26,
-              inactiveFgColor: Colors.white,
-              totalSwitches: 2,
-              labels: ["Agregar", ""],
-              icons: [null, FontAwesomeIcons.xmark],
-              onToggle: (index) {
-                mostrar = index;
-              },
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            TextFormField(
               controller: contentController,
               maxLines: 8,
               maxLength: 1000,
@@ -181,9 +106,6 @@ class _CapturaInfoState extends State<CapturaInfo> {
                       //actualizacion
                       empresa.title = titleController.text;
                       empresa.tipo = tipoController.text;
-                      empresa.valor = valorController.value as int;
-                      empresa.categoria = prendaSeleccionada.text;
-                      empresa.video = videoController.text;
                       empresa.content = contentController.text;
                       Operations.update(empresa);
                     } else {
@@ -191,9 +113,6 @@ class _CapturaInfoState extends State<CapturaInfo> {
                       Operations.insert(Empresas(
                         title: titleController.text,
                         tipo: tipoController.text,
-                        valor: valorController.value as int,
-                        categoria: prendaSeleccionada.text,
-                        video: videoController.text,
                         content: contentController.text,
                       ));
                     }
@@ -203,28 +122,5 @@ class _CapturaInfoState extends State<CapturaInfo> {
         ),
       ),
     );
-  }
-
-  @override
-  Widget _mostrarWidget(int? valorDelToggle) {
-    Widget? mostrarWidget;
-    if ( valorDelToggle == 1) {
-      mostrarWidget = Container(
-        child: TextFormField(
-          controller: videoController,
-          validator: (value) {
-            if (value != null) {
-              return null;
-            } else {
-              return "tiene que colocar data";
-            }
-          },
-          decoration: InputDecoration(
-              labelText: "Ingresa el link del video",
-              border: OutlineInputBorder()),
-        ),
-      );
-    }
-    return mostrarWidget!;
   }
 }

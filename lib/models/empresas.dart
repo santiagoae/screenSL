@@ -1,19 +1,13 @@
 class Empresas {
    int? id;
    String? title = "" ;     
-   String? tipo = "" ;
-   int? valor;
-   String? categoria = "" ;
-   String? video ="";
+   String? tipo = "" ;   
    String? content = "" ;
 
   Empresas({
     this.id, 
     required this.title,    
-    required this.tipo,
-    this.valor,
-    required this.categoria,
-    required this.video,
+    required this.tipo,    
     required this.content,
   });
 
@@ -23,10 +17,7 @@ class Empresas {
     return {
       "id": id, 
       "title": title,
-      "tipo": tipo,
-      "valor": valor,
-      "categoria": categoria,
-      "video": video, 
+      "tipo": tipo,      
       "content": content,
       
     };

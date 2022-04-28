@@ -6,11 +6,11 @@ class Operations {
 
   static Future<Database> _openDB() async {
     return openDatabase(
-      join( await getDatabasesPath(), 'productosEmpresa.db'),
+      join( await getDatabasesPath(), 'organizaciones.db'),
 
       onCreate: (db, version){
         return db.execute(          
-          "CREATE TABLE organizaciones (id INTEGER PRIMARY KEY, title TEXT, tipo TEXT, valor INTEGER, categoria TEXT, video TEXT, content TEXT )"          
+          "CREATE TABLE organizaciones (id INTEGER PRIMARY KEY, title TEXT, content TEXT )"          
         );
         
       }, version: 1
@@ -20,30 +20,30 @@ class Operations {
   static Future<int> insert(Empresas empresa)async{
     Database database = await _openDB();
     
-    return database.insert("productosEmpresa", empresa.toMap());
+    return database.insert("organizaciones", empresa.toMap());
   }
 
   static Future<int> delete(Empresas empresa)async{
     Database database = await _openDB();
     
-    return database.delete("productosEmpresa", where: "id = ?", whereArgs: [empresa.id] );
+    return database.delete("organizaciones", where: "id = ?", whereArgs: [empresa.id] );
   }
 
   static Future<int> update(Empresas empresa)async{
     Database database = await _openDB();
     
-    return database.update("productosEmpresa",empresa.toMap(), where: "id = ?", whereArgs: [empresa.id] );
+    return database.update("organizaciones",empresa.toMap(), where: "id = ?", whereArgs: [empresa.id] );
   }
 
   static Future<List<Empresas>>  empresas() async{
     Database database = await _openDB();
-    final List<Map<String, dynamic>> empresasMap = await database.query("productosEmpresa");
+    final List<Map<String, dynamic>> empresasMap = await database.query("organizaciones");
 
     for (var recorrerObjeto in empresasMap) {
       print("__________"+recorrerObjeto["title"] );
     }
 
-    return List.generate(empresasMap.length, (i) => Empresas(id: empresasMap[i]['id'], title: empresasMap[i]['title'], tipo: empresasMap[i]['tipo'], valor: empresasMap[i]['valor'], categoria: empresasMap[i]['categoria'], video: empresasMap[i]['video'], content: empresasMap[i]['content']));
+    return List.generate(empresasMap.length, (i) => Empresas(id: empresasMap[i]['id'], title: empresasMap[i]['title'], tipo: empresasMap[i]['tipo'], content: empresasMap[i]['content']));
   }
   
 }
