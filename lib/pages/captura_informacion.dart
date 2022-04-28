@@ -1,6 +1,8 @@
 import "package:flutter/material.dart";
 import 'package:slscreen/db/operaciones.dart';
 import 'package:slscreen/models/empresas.dart';
+import 'package:dropdown_formfield/dropdown_formfield.dart';
+
 
 class CapturaInfo extends StatefulWidget {
   static const String ROUTE = "/capturaInfo";
@@ -16,7 +18,13 @@ class _CapturaInfoState extends State<CapturaInfo> {
 
   final tipoController = TextEditingController();
 
+  final categoriaController = TextEditingController();
+
   final contentController = TextEditingController();
+
+  String? _categoriaSeleccionada = "";
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -36,15 +44,14 @@ class _CapturaInfoState extends State<CapturaInfo> {
   _init(Empresas empresa) {
     titleController.text = empresa.title!;
     contentController.text = empresa.content!;
-    tipoController.text = empresa.tipo!;
+    tipoController.text = empresa.tipo!;    
   }
 
   @override
   Widget _buildForm(Empresas empresa) {
     return Container(
       padding: EdgeInsets.all(15),
-      child: Form(
-        autovalidateMode: AutovalidateMode.onUserInteraction,
+      child: Form(        
         key: _formKey,
         child: Column(
           children: <Widget>[
@@ -81,6 +88,43 @@ class _CapturaInfoState extends State<CapturaInfo> {
             SizedBox(
               height: 15,
             ),
+
+            DropDownFormField(              
+              titleText: "Categoria",
+              hintText: _categoriaSeleccionada,
+              value: _categoriaSeleccionada,
+              onSaved: (value){
+                setState(() {
+                  _categoriaSeleccionada = value;
+                });
+              },
+              onChanged: (value){
+                setState(() {
+                  _categoriaSeleccionada = value;
+                });
+              },
+              dataSource: [
+                {
+                  "display":"Camisa",
+                  "value":"Camisa"
+                },
+                {
+                  "display":"Camiseta",
+                  "value":"Camiseta"
+                },
+                {
+                  "display":"Buso",
+                  "value":"Buso"
+                }
+              ],
+              textField: "display",
+              valueField: "value",
+            ),
+
+            SizedBox(
+              height: 15,
+            ),
+
             TextFormField(
               controller: contentController,
               maxLines: 8,
@@ -106,6 +150,7 @@ class _CapturaInfoState extends State<CapturaInfo> {
                       //actualizacion
                       empresa.title = titleController.text;
                       empresa.tipo = tipoController.text;
+                      empresa.categoria = _categoriaSeleccionada;
                       empresa.content = contentController.text;
                       Operations.update(empresa);
                     } else {
@@ -113,6 +158,7 @@ class _CapturaInfoState extends State<CapturaInfo> {
                       Operations.insert(Empresas(
                         title: titleController.text,
                         tipo: tipoController.text,
+                        categoria: _categoriaSeleccionada,
                         content: contentController.text,
                       ));
                     }
