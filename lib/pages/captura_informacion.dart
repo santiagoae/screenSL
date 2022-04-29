@@ -1,8 +1,10 @@
+import 'dart:io';
+
 import "package:flutter/material.dart";
+import 'package:image_picker/image_picker.dart';
 import 'package:slscreen/db/operaciones.dart';
 import 'package:slscreen/models/empresas.dart';
 import 'package:dropdown_formfield/dropdown_formfield.dart';
-
 
 class CapturaInfo extends StatefulWidget {
   static const String ROUTE = "/capturaInfo";
@@ -24,7 +26,7 @@ class _CapturaInfoState extends State<CapturaInfo> {
 
   String? _categoriaSeleccionada = "";
 
-
+  File? image;
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +34,7 @@ class _CapturaInfoState extends State<CapturaInfo> {
     _init(empresa);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text("Producto"),
       ),
@@ -44,17 +47,41 @@ class _CapturaInfoState extends State<CapturaInfo> {
   _init(Empresas empresa) {
     titleController.text = empresa.title!;
     contentController.text = empresa.content!;
-    tipoController.text = empresa.tipo!;    
+    tipoController.text = empresa.tipo!;
+  }
+
+  Future pickImage() async {
+    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (image == null) return;
+    final imageTemporary = File(image.path);
+    setState(() => this.image = imageTemporary);
   }
 
   @override
   Widget _buildForm(Empresas empresa) {
     return Container(
       padding: EdgeInsets.all(15),
-      child: Form(        
+      child: Form(
         key: _formKey,
-        child: Column(
+        child: ListView(
+          shrinkWrap: true,
           children: <Widget>[
+            Spacer(),
+            image != null
+                ? Image.file(
+                    image!,
+                    width: 160,
+                    height: 160,
+                    fit: BoxFit.cover,
+                  )
+                : FlutterLogo(
+                    size: 160,
+                  ),
+            ElevatedButton(
+                onPressed: () {
+                  pickImage();
+                },
+                child: Text("Agregar foto")),
             TextFormField(
               controller: titleController,
               validator: (value) {
@@ -88,43 +115,31 @@ class _CapturaInfoState extends State<CapturaInfo> {
             SizedBox(
               height: 15,
             ),
-
-            DropDownFormField(              
+            DropDownFormField(
               titleText: "Categoria",
               hintText: _categoriaSeleccionada,
               value: _categoriaSeleccionada,
-              onSaved: (value){
+              onSaved: (value) {
                 setState(() {
                   _categoriaSeleccionada = value;
                 });
               },
-              onChanged: (value){
+              onChanged: (value) {
                 setState(() {
                   _categoriaSeleccionada = value;
                 });
               },
               dataSource: [
-                {
-                  "display":"Camisa",
-                  "value":"Camisa"
-                },
-                {
-                  "display":"Camiseta",
-                  "value":"Camiseta"
-                },
-                {
-                  "display":"Buso",
-                  "value":"Buso"
-                }
+                {"display": "Camisa", "value": "Camisa"},
+                {"display": "Camiseta", "value": "Camiseta"},
+                {"display": "Buso", "value": "Buso"}
               ],
               textField: "display",
               valueField: "value",
             ),
-
             SizedBox(
               height: 15,
             ),
-
             TextFormField(
               controller: contentController,
               maxLines: 8,
