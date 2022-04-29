@@ -1,3 +1,8 @@
+# for start the proyject in a vm on visual code you must config this
+- file, Preferences,Settings
+- search flutter args and add "--no-sound-null-safety" to the section Dart:Flutter Run Additional Args
+There is a thing whit a dependece that need start whit flutter run --no-sound-null-safety so is better do it in that way.
+
 # slscreen
 
 A new Flutter project.
